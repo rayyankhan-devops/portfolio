@@ -43,7 +43,7 @@ export default function Certifications() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
         {certifications.map((cert, i) => (
           <motion.div
-            key={cert.name}
+            key={`${cert.name}-${cert.issuer}`}
             onClick={() => cert.image && setSelectedCert(cert.image)}
             className={`group relative p-6 rounded-lg border border-border bg-surface/30 hover:border-secondary/30 transition-all duration-500 overflow-hidden ${
               cert.image ? 'cursor-pointer' : 'cursor-default'

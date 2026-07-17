@@ -65,6 +65,7 @@ export default function Navbar() {
                 src="/images/icon.png"
                 alt="Muhammad Rayyan"
                 fill
+                sizes="(max-width: 768px) 40px, 48px"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
             </div>
