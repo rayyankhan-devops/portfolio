@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
 
 export default function CustomCursor() {
   const [isHovered, setIsHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isClicking, setIsClicking] = useState(false);
+  const [cursorText, setCursorText] = useState('');
 
   // Motion values for absolute positioning
   const cursorX = useMotionValue(-100);
@@ -43,11 +44,22 @@ export default function CustomCursor() {
     // Setup hover listeners for interactive elements
     const addHoverListeners = () => {
       const interactiveElements = document.querySelectorAll(
-        'a, button, [role="button"], input, select, textarea, .cursor-pointer'
+        'a, button, [role="button"], input, select, textarea, .cursor-pointer, [data-cursor]'
       );
 
-      const onMouseEnter = () => setIsHovered(true);
-      const onMouseLeave = () => setIsHovered(false);
+      const onMouseEnter = (e: Event) => {
+        setIsHovered(true);
+        const target = e.currentTarget as HTMLElement;
+        const text = target.getAttribute('data-cursor');
+        if (text) {
+          setCursorText(text);
+        }
+      };
+
+      const onMouseLeave = () => {
+        setIsHovered(false);
+        setCursorText('');
+      };
 
       interactiveElements.forEach((el) => {
         el.addEventListener('mouseenter', onMouseEnter);
@@ -88,7 +100,7 @@ export default function CustomCursor() {
     <>
       {/* Outer Ring */}
       <motion.div
-        className="fixed top-0 left-0 w-8 h-8 rounded-full border border-accent pointer-events-none z-[9999] mix-blend-difference"
+        className="fixed top-0 left-0 w-8 h-8 rounded-full border border-accent pointer-events-none z-[9999] mix-blend-difference flex items-center justify-center text-center overflow-hidden"
         style={{
           x: cursorXSpring,
           y: cursorYSpring,
@@ -96,12 +108,26 @@ export default function CustomCursor() {
           translateY: '-50%',
         }}
         animate={{
-          scale: isClicking ? 0.8 : isHovered ? 1.8 : 1,
-          backgroundColor: isHovered ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0)',
-          borderColor: isHovered ? 'rgba(255, 255, 255, 0)' : 'var(--color-accent)',
+          scale: isClicking ? 0.8 : cursorText ? 2.5 : isHovered ? 1.8 : 1,
+          backgroundColor: (isHovered || cursorText) ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0)',
+          borderColor: (isHovered || cursorText) ? 'rgba(255, 255, 255, 0)' : 'var(--color-accent)',
         }}
-        transition={{ type: 'tween', ease: 'backOut', duration: 0.3 }}
-      />
+        transition={{ type: 'spring', stiffness: 220, damping: 22, mass: 0.5 }}
+      >
+        <AnimatePresence>
+          {cursorText && (
+            <motion.span
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.6 }}
+              transition={{ duration: 0.2 }}
+              className="text-[7px] font-heading font-extrabold tracking-widest text-[#080808] uppercase pointer-events-none"
+            >
+              {cursorText}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </motion.div>
 
       {/* Inner Dot */}
       <motion.div
@@ -113,8 +139,8 @@ export default function CustomCursor() {
           translateY: '-50%',
         }}
         animate={{
-          scale: isClicking ? 1.5 : isHovered ? 0 : 1,
-          backgroundColor: isHovered ? 'rgba(255, 255, 255, 0)' : 'var(--color-accent)',
+          scale: isClicking ? 1.5 : (isHovered || cursorText) ? 0 : 1,
+          backgroundColor: (isHovered || cursorText) ? 'rgba(255, 255, 255, 0)' : 'var(--color-accent)',
         }}
         transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }}
       />

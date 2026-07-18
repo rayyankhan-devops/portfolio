@@ -17,6 +17,14 @@ const socialIconMap: Record<string, React.ComponentType<{ className?: string }>>
   FaWhatsapp,
 };
 
+// Dynamic cursor text helper for social links
+const cursorMap: Record<string, string> = {
+  Email: 'mail',
+  WhatsApp: 'chat',
+  LinkedIn: 'link',
+  GitHub: 'code',
+};
+
 export default function Contact() {
   const [copied, setCopied] = useState(false);
   const email = 'rkkhan0750@gmail.com';
@@ -49,20 +57,20 @@ export default function Contact() {
         <TextReveal
           text="Let's build"
           as="h2"
-          className="font-heading text-[clamp(3rem,10vw,8rem)] font-bold uppercase leading-[0.95]"
+          className="font-heading text-[clamp(3rem,10vw,8rem)] font-bold uppercase leading-[0.95] tracking-tighter"
           delay={0.1}
         />
         <TextReveal
           text="something"
           as="h2"
-          className="font-heading text-[clamp(3rem,10vw,8rem)] font-bold uppercase leading-[0.95] text-gradient"
+          className="font-heading text-[clamp(3rem,10vw,8rem)] font-bold uppercase leading-[0.95] text-gradient tracking-tighter"
           delay={0.3}
         />
       </div>
 
       {/* Description */}
       <SectionReveal delay={0.3}>
-        <p className="text-muted text-base md:text-lg leading-relaxed max-w-xl mb-12">
+        <p className="text-muted text-base md:text-lg leading-relaxed max-w-xl mb-12 text-pretty">
           Got a project that needs robust infrastructure, automated pipelines, or cloud architecture? 
           I&apos;d love to hear about it. Let&apos;s connect and build something production-ready.
         </p>
@@ -72,19 +80,24 @@ export default function Contact() {
       <SectionReveal delay={0.4} className="mb-16">
         <div className="flex items-center gap-4 flex-wrap">
           <MagneticButton href={`mailto:${email}`} strength={0.2}>
-            <span className="text-xl md:text-2xl font-medium hover:text-accent transition-colors duration-300 flex items-center gap-3">
+            <span 
+              data-cursor="email"
+              className="text-xl md:text-2xl font-medium hover:text-accent transition-all duration-300 flex items-center gap-3 border-draw-hover pb-1 cursor-pointer"
+            >
               {email}
-              <FiArrowUpRight className="w-5 h-5" />
+              <FiArrowUpRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
             </span>
           </MagneticButton>
           <button
             onClick={handleCopy}
-            className="p-2 rounded-full border border-border hover:border-accent transition-colors duration-300"
+            className="p-2 rounded-full border border-border hover:border-accent transition-colors duration-300 cursor-pointer"
             aria-label="Copy email address"
+            data-cursor="copy"
           >
             <motion.div
               initial={false}
-              animate={{ rotate: copied ? 0 : 0 }}
+              animate={{ rotate: copied ? 360 : 0 }}
+              transition={{ duration: 0.4, ease: EASE_OUT_EXPO }}
             >
               {copied ? (
                 <FiCheck className="w-4 h-4 text-secondary" />
@@ -95,7 +108,7 @@ export default function Contact() {
           </button>
           {copied && (
             <motion.span
-              className="text-xs text-secondary"
+              className="text-xs text-secondary font-mono"
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0 }}
@@ -111,6 +124,7 @@ export default function Contact() {
         <div className="flex gap-4">
           {socialLinks.map((link, i) => {
             const IconComponent = socialIconMap[link.icon] || FiArrowUpRight;
+            const cursorText = cursorMap[link.name] || 'social';
 
             return (
               <motion.div
@@ -125,8 +139,11 @@ export default function Contact() {
                 }}
               >
                 <MagneticButton href={link.url} strength={0.25}>
-                  <span className="group flex items-center justify-center w-12 h-12 rounded-full border border-border hover:border-accent hover:bg-accent/5 transition-all duration-400">
-                    <IconComponent className="w-5 h-5 text-muted group-hover:text-accent transition-colors duration-300" />
+                  <span 
+                    data-cursor={cursorText}
+                    className="group flex items-center justify-center w-12 h-12 rounded-full border border-border hover:border-accent hover:bg-accent/5 transition-all duration-400 cursor-pointer"
+                  >
+                    <IconComponent className="w-5 h-5 text-muted group-hover:text-accent group-hover:scale-110 transition-all duration-300" />
                   </span>
                 </MagneticButton>
               </motion.div>

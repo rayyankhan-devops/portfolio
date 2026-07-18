@@ -95,33 +95,36 @@ export default function Skills() {
                   layout: { duration: 0.4 },
                 }}
                 whileHover={{
-                  y: -4,
-                  transition: { duration: 0.3 },
+                  y: -5,
+                  scale: 1.02,
+                  boxShadow: '0 10px 30px -10px rgba(0, 102, 255, 0.15)',
+                  transition: { duration: 0.3, ease: EASE_OUT_EXPO },
                 }}
+                data-cursor="tech"
                 className="group relative p-5 md:p-6 rounded-lg border border-border bg-surface/50 hover:border-accent/30 hover:bg-surface-light/50 transition-colors duration-500 cursor-default"
               >
                 {/* Glow effect on hover */}
                 <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                  style={{ boxShadow: '0 0 30px rgba(0, 102, 255, 0.06) inset' }}
+                  style={{ boxShadow: '0 0 30px rgba(0, 102, 255, 0.08) inset' }}
                 />
 
                 <div className="relative z-10">
                   {IconComponent && (
-                    <IconComponent className="w-6 h-6 mb-4 text-muted group-hover:text-accent transition-colors duration-400" />
+                    <IconComponent className="w-6 h-6 mb-4 text-muted group-hover:text-accent group-hover:scale-110 group-hover:rotate-6 transition-all duration-400 ease-out" />
                   )}
-                  <h3 className="text-sm font-medium mb-3">{skill.name}</h3>
+                  <h3 className="text-sm font-medium mb-3 tracking-tight font-heading">{skill.name}</h3>
                   
                   {/* Proficiency bar */}
                   <div className="w-full h-[2px] bg-border rounded-full overflow-hidden">
                     <motion.div
-                      className="h-full bg-accent rounded-full"
+                      className="h-full bg-accent rounded-full shadow-[0_0_8px_rgba(0,102,255,0.8)]"
                       initial={{ width: 0 }}
                       whileInView={{ width: `${skill.level}%` }}
                       viewport={{ once: true }}
-                      transition={{ duration: 1, delay: 0.3 + i * 0.03, ease: EASE_OUT_EXPO }}
+                      transition={{ duration: 1.2, delay: 0.2 + i * 0.03, ease: EASE_OUT_EXPO }}
                     />
                   </div>
-                  <span className="text-[10px] text-muted-dark mt-1.5 block">{skill.level}%</span>
+                  <span className="text-[10px] text-muted-dark mt-1.5 block font-mono">{skill.level}%</span>
                 </div>
               </motion.div>
             );

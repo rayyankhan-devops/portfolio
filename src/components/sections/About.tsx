@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import SectionReveal from '@/components/ui/SectionReveal';
 import TextReveal from '@/components/ui/TextReveal';
@@ -24,6 +24,17 @@ const journeySteps = [
 
 export default function About() {
   const sectionRef = useRef<HTMLElement>(null);
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  const handleTimelineScroll = () => {
+    if (!timelineRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = timelineRef.current;
+    const totalScroll = scrollWidth - clientWidth;
+    if (totalScroll <= 0) return;
+    setScrollProgress(scrollLeft / totalScroll);
+  };
+
   return (
     <section
       ref={sectionRef}
@@ -48,12 +59,12 @@ export default function About() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 mb-16 md:mb-20">
         {/* Story */}
         <SectionReveal delay={0.2}>
-          <p className="text-muted text-base md:text-lg leading-relaxed mb-6">
+          <p className="text-muted text-base md:text-lg leading-relaxed text-pretty mb-6">
             I&apos;m a DevOps & Cloud Engineer passionate about building scalable, secure, and 
             automated infrastructure. I believe that great software deserves great deployment 
             pipelines, and every system should be reproducible, observable, and resilient.
           </p>
-          <p className="text-muted text-base md:text-lg leading-relaxed">
+          <p className="text-muted text-base md:text-lg leading-relaxed text-pretty">
             From setting up CI/CD pipelines to architecting multi-cloud environments, I focus on 
             turning complex infrastructure challenges into elegant, automated solutions. Security 
             isn&apos;t an afterthought — it&apos;s embedded into every pipeline I build.
@@ -64,11 +75,11 @@ export default function About() {
         <SectionReveal delay={0.3}>
           <div className="grid grid-cols-3 gap-8">
             {stats.map((stat, i) => (
-              <div key={i} className="text-center lg:text-left">
-                <div className="text-4xl md:text-5xl font-heading font-bold mb-2">
+              <div key={i} className="text-center lg:text-left group cursor-default">
+                <div className="text-4xl md:text-5xl font-heading font-bold mb-2 transition-transform duration-500 group-hover:scale-105 origin-left">
                   <AnimatedCounter target={stat.value} suffix={stat.suffix} />
                 </div>
-                <p className="text-xs uppercase tracking-[0.2em] text-muted">{stat.label}</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-dark group-hover:text-accent transition-colors duration-500">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -82,53 +93,74 @@ export default function About() {
         </SectionReveal>
 
         <div className="relative">
-          {/* Animated horizontal line */}
-          <div className="absolute left-0 right-0 top-[2.75rem] h-[1px] bg-border z-0">
-            <motion.div
-              className="absolute left-0 top-0 h-full bg-accent origin-left"
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.5, ease: EASE_OUT_EXPO }}
-              style={{ width: '100%' }}
-            />
+          {/* Horizontal scroll timeline container */}
+          <div 
+            ref={timelineRef}
+            onScroll={handleTimelineScroll}
+            data-cursor="swipe"
+            className="relative overflow-x-auto py-6 pb-12 scrollbar-none snap-x snap-mandatory -mx-4 px-4 md:mx-0 md:px-0 z-10 cursor-grab active:cursor-grabbing"
+          >
+            <div className="relative flex gap-8 md:gap-12 w-max min-w-full">
+              {/* Animated horizontal line - now nested inside the scrollable content container */}
+              <div className="absolute left-0 right-[260px] md:right-[300px] top-[2.75rem] h-[1px] bg-border z-0">
+                <motion.div
+                  className="absolute left-0 top-0 h-full bg-accent origin-left"
+                  initial={{ scaleX: 0 }}
+                  whileInView={{ scaleX: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1.5, ease: EASE_OUT_EXPO }}
+                  style={{ width: '100%' }}
+                />
+              </div>
+
+              {journeySteps.map((step, i) => (
+                <motion.div
+                  key={step.year}
+                  className="relative flex flex-col min-w-[260px] md:min-w-[300px] snap-start z-10"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{
+                    duration: 0.7,
+                    delay: i * 0.12,
+                    ease: EASE_OUT_EXPO,
+                  }}
+                >
+                  {/* Year above the line */}
+                  <span className="text-xs text-accent tracking-[0.2em] mb-8 block font-mono">
+                    {step.year}
+                  </span>
+
+                  {/* Dot exactly on the line */}
+                  <div className="absolute left-0 top-[2.75rem] w-2.5 h-2.5 rounded-full bg-accent translate-y-[-50%] z-10 shadow-[0_0_10px_rgba(0,102,255,0.4)]" />
+
+                  {/* Content below the line */}
+                  <h4 className="text-base md:text-lg font-semibold mb-2 mt-4 font-heading uppercase tracking-tight">
+                    {step.title}
+                  </h4>
+                  <p className="text-xs md:text-sm text-muted leading-relaxed max-w-[260px] md:max-w-[280px]">
+                    {step.description}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
           </div>
 
-          {/* Horizontal scroll timeline container */}
-          <div className="relative flex gap-8 md:gap-12 overflow-x-auto py-6 pb-12 scrollbar-none snap-x snap-mandatory -mx-4 px-4 md:mx-0 md:px-0 z-10">
-            {journeySteps.map((step, i) => (
-              <motion.div
-                key={step.year}
-                className="relative flex flex-col min-w-[260px] md:min-w-[300px] snap-start"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{
-                  duration: 0.7,
-                  delay: i * 0.12,
-                  ease: EASE_OUT_EXPO,
-                }}
-              >
-                {/* Year above the line */}
-                <span className="text-xs text-accent tracking-[0.2em] mb-8 block">
-                  {step.year}
-                </span>
-
-                {/* Dot exactly on the line */}
-                <div className="absolute left-0 top-[2.75rem] w-2.5 h-2.5 rounded-full bg-accent translate-y-[-50%] z-10" />
-
-                {/* Content below the line */}
-                <h4 className="text-base md:text-lg font-semibold mb-2 mt-4">
-                  {step.title}
-                </h4>
-                <p className="text-xs md:text-sm text-muted leading-relaxed max-w-[260px] md:max-w-[280px]">
-                  {step.description}
-                </p>
-              </motion.div>
-            ))}
+          {/* Scroll progress bar for timeline (mobile only indicator) */}
+          <div className="mt-2 flex justify-center items-center gap-3 md:hidden">
+            <div className="w-12 h-[2px] bg-border rounded-full overflow-hidden relative">
+              <div 
+                className="absolute left-0 top-0 h-full bg-accent rounded-full"
+                style={{ width: `${scrollProgress * 100}%` }}
+              />
+            </div>
+            <span className="text-[9px] uppercase tracking-[0.15em] text-muted-dark font-mono">
+              Drag to explore
+            </span>
           </div>
         </div>
       </div>
+
     </section>
   );
 }

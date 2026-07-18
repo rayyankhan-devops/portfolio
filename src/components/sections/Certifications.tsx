@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { certifications } from '@/lib/data';
@@ -11,14 +11,36 @@ import { FiAward, FiEye } from 'react-icons/fi';
 
 // Map certifications to badge colors
 const badgeColors: Record<string, string> = {
-  'Amazon Web Services': 'from-[#FF9900]/20 to-[#FF9900]/5',
-  'Train With Shubham': 'from-[#7C3AED]/20 to-[#7C3AED]/5',
-  'YoungDev Interns': 'from-[#E11D48]/20 to-[#E11D48]/5',
-  'DevelopersHub Corporation': 'from-[#2563EB]/20 to-[#2563EB]/5',
+  'Amazon Web Services': 'from-[#FF9900]/15 to-[#FF9900]/5',
+  'Train With Shubham': 'from-[#7C3AED]/15 to-[#7C3AED]/5',
+  'YoungDev Interns': 'from-[#E11D48]/15 to-[#E11D48]/5',
+  'DevelopersHub Corporation': 'from-[#2563EB]/15 to-[#2563EB]/5',
 };
 
 export default function Certifications() {
   const [selectedCert, setSelectedCert] = useState<string | null>(null);
+
+  // Spotlight glow effect tracker
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    card.style.setProperty('--mouse-x', `${x}px`);
+    card.style.setProperty('--mouse-y', `${y}px`);
+  };
+
+  // Keyboard accessibility: Escape to close modal
+  useEffect(() => {
+    if (!selectedCert) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedCert(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedCert]);
 
   return (
     <section
@@ -45,6 +67,8 @@ export default function Certifications() {
           <motion.div
             key={`${cert.name}-${cert.issuer}`}
             onClick={() => cert.image && setSelectedCert(cert.image)}
+            onMouseMove={handleMouseMove}
+            data-cursor={cert.image ? 'cert' : undefined}
             className={`group relative p-6 rounded-lg border border-border bg-surface/30 hover:border-secondary/30 transition-all duration-500 overflow-hidden ${
               cert.image ? 'cursor-pointer' : 'cursor-default'
             }`}
@@ -57,12 +81,22 @@ export default function Certifications() {
               ease: EASE_OUT_EXPO,
             }}
             whileHover={{
-              y: -4,
+              y: -5,
+              scale: 1.01,
+              boxShadow: '0 10px 30px -10px rgba(0, 212, 170, 0.12)',
               transition: { duration: 0.3 },
             }}
           >
-            {/* Background gradient */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${badgeColors[cert.issuer] || 'from-accent/10 to-transparent'} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+            {/* Spotlight Glow Overlay */}
+            <div 
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0"
+              style={{
+                background: 'radial-gradient(180px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(0, 212, 170, 0.1), transparent 80%)'
+              }}
+            />
+
+            {/* Background gradient border highlights */}
+            <div className={`absolute inset-0 bg-gradient-to-br ${badgeColors[cert.issuer] || 'from-accent/10 to-transparent'} opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0`} />
 
             <div className="relative z-10">
               <div className="flex justify-between items-start mb-5">
@@ -76,10 +110,10 @@ export default function Certifications() {
                   </span>
                 )}
               </div>
-              <h3 className="text-sm font-semibold mb-2 leading-snug">{cert.name}</h3>
+              <h3 className="text-sm font-semibold mb-2 leading-snug tracking-tight font-heading">{cert.name}</h3>
               <p className="text-xs text-muted mb-3">{cert.issuer}</p>
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase tracking-[0.15em] text-muted-dark">{cert.date}</span>
+                <span className="text-[10px] uppercase tracking-[0.15em] text-muted-dark font-mono">{cert.date}</span>
                 {cert.credentialId && (
                   <span className="text-[9px] text-muted-dark/50 font-mono">{cert.credentialId}</span>
                 )}
@@ -119,7 +153,7 @@ export default function Certifications() {
               </div>
               <button
                 onClick={() => setSelectedCert(null)}
-                className="absolute -top-12 right-0 text-muted hover:text-foreground text-sm uppercase tracking-widest flex items-center gap-2 cursor-pointer"
+                className="absolute -top-12 right-0 text-muted hover:text-foreground text-sm uppercase tracking-widest flex items-center gap-2 cursor-pointer focus:outline-none"
               >
                 Close
                 <span className="text-xl">×</span>

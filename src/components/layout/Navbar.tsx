@@ -59,7 +59,7 @@ export default function Navbar() {
       >
         <div className="section-padding py-5 md:py-6 flex items-center justify-between">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-3 md:gap-4 group">
+          <a href="#" className="flex items-center gap-3 md:gap-4 group" data-cursor="home">
             <div className="relative w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden border border-border group-hover:border-accent transition-colors duration-300">
               <Image
                 src="/images/icon.png"
@@ -84,7 +84,8 @@ export default function Navbar() {
             {navItems.map((item) => (
               <MagneticButton key={item.href} href={item.href} strength={0.15}>
                 <span
-                  className={`text-sm tracking-wide transition-colors duration-300 hover:text-foreground ${
+                  data-cursor={item.label.toLowerCase()}
+                  className={`text-sm tracking-wide transition-colors duration-300 hover:text-foreground cursor-pointer ${
                     activeSection === item.href.replace('#', '')
                       ? 'text-foreground'
                       : 'text-muted'
@@ -98,10 +99,11 @@ export default function Navbar() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden flex flex-col gap-1.5 p-2 z-50"
+            className="md:hidden flex flex-col gap-1.5 p-2 z-50 cursor-pointer"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isMenuOpen}
+            data-cursor={isMenuOpen ? 'close' : 'menu'}
           >
             <motion.span
               className="block w-6 h-[1.5px] bg-foreground origin-center"
@@ -149,6 +151,7 @@ export default function Navbar() {
                     href={item.href}
                     className="text-4xl font-heading font-bold uppercase tracking-tight flex items-center gap-4"
                     onClick={() => setIsMenuOpen(false)}
+                    data-cursor="go"
                   >
                     <span className="text-sm font-sans text-muted">{item.number}</span>
                     {item.label}

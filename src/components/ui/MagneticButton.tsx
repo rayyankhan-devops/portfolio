@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, type ReactNode } from 'react';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
 interface MagneticButtonProps {
   children: ReactNode;
@@ -23,8 +23,13 @@ export default function MagneticButton({
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  const springX = useSpring(x, { stiffness: 150, damping: 15, mass: 0.1 });
-  const springY = useSpring(y, { stiffness: 150, damping: 15, mass: 0.1 });
+  // Outer container springs (faster and larger movement)
+  const springX = useSpring(x, { stiffness: 120, damping: 14, mass: 0.1 });
+  const springY = useSpring(y, { stiffness: 120, damping: 14, mass: 0.1 });
+
+  // Inner content transforms (slower and smaller movement for 3D parallax)
+  const innerX = useTransform(springX, (val) => val * 0.45);
+  const innerY = useTransform(springY, (val) => val * 0.45);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!ref.current) return;
@@ -57,8 +62,11 @@ export default function MagneticButton({
         className={className}
         {...linkProps}
       >
-        {children}
+        <motion.span style={{ x: innerX, y: innerY }} className="block">
+          {children}
+        </motion.span>
       </Component>
     </motion.div>
   );
 }
+

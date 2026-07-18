@@ -6,6 +6,12 @@ export const EASE_OUT_CUBIC: [number, number, number, number] = [0.33, 1, 0.68, 
 export const EASE_IN_OUT: [number, number, number, number] = [0.65, 0, 0.35, 1];
 export const EASE_OUT_QUART: [number, number, number, number] = [0.25, 1, 0.5, 1];
 
+// ─── Custom Premium Spring Presets ──────────────────────────────────
+export const SPRING_SMOOTH = { type: 'spring', stiffness: 100, damping: 15, mass: 0.8 };
+export const SPRING_BOUNCY = { type: 'spring', stiffness: 200, damping: 12, mass: 0.5 };
+export const SPRING_FAST = { type: 'spring', stiffness: 350, damping: 40, mass: 0.4 };
+
+
 // ─── Viewport Settings ─────────────────────────────────────────────
 export const VIEWPORT_ONCE = { once: true, amount: 0.3 };
 export const VIEWPORT_PARTIAL = { once: true, amount: 0.15 };

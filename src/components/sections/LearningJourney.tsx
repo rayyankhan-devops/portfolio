@@ -63,7 +63,7 @@ export default function LearningJourney() {
         </div>
 
         {/* Milestone Markers */}
-        <div className="relative mt-6 flex justify-between">
+        <div className="relative mt-6 h-12">
           {learningMilestones.map((milestone, i) => {
             const position = (milestone.day / 90) * 100;
 
@@ -77,8 +77,8 @@ export default function LearningJourney() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.3 + i * 0.1 }}
               >
-                <div className="w-2 h-2 rounded-full bg-accent mb-2" />
-                <span className="text-[10px] uppercase tracking-[0.15em] text-muted whitespace-nowrap">
+                <div className="w-2 h-2 rounded-full bg-accent mb-2 shadow-[0_0_6px_rgba(0,102,255,0.6)] animate-pulse" />
+                <span className="text-[10px] uppercase tracking-[0.15em] text-muted whitespace-nowrap font-mono">
                   Day {milestone.day}
                 </span>
               </motion.div>
@@ -92,7 +92,8 @@ export default function LearningJourney() {
         {learningMilestones.map((milestone, i) => (
           <motion.div
             key={milestone.day}
-            className="group p-6 rounded-lg border border-border bg-surface/30 hover:border-accent/20 transition-all duration-500"
+            data-cursor="milestone"
+            className="group p-6 rounded-lg border border-border bg-surface/30 hover:border-accent/20 transition-all duration-500 cursor-default"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
@@ -101,19 +102,24 @@ export default function LearningJourney() {
               delay: i * 0.1,
               ease: EASE_OUT_EXPO,
             }}
-            whileHover={{ y: -3 }}
+            whileHover={{ 
+              y: -5,
+              scale: 1.01,
+              boxShadow: '0 10px 30px -10px rgba(0, 102, 255, 0.08)',
+              transition: { duration: 0.3 }
+            }}
           >
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-2xl font-heading font-bold text-accent">
+              <span className="text-2xl font-heading font-bold text-accent font-mono">
                 {milestone.day}
               </span>
-              <span className="text-[10px] uppercase tracking-[0.15em] text-muted-dark">Days</span>
+              <span className="text-[10px] uppercase tracking-[0.15em] text-muted-dark font-mono">Days</span>
             </div>
-            <h3 className="text-sm font-semibold mb-2">{milestone.title}</h3>
+            <h3 className="text-sm font-semibold mb-2 font-heading uppercase tracking-tight">{milestone.title}</h3>
             <p className="text-xs text-muted leading-relaxed mb-4">{milestone.description}</p>
             <div className="flex flex-wrap gap-1.5">
               {milestone.topics.slice(0, 4).map(topic => (
-                <span key={topic} className="text-[9px] uppercase tracking-[0.1em] text-muted-dark border border-border/50 px-2 py-0.5 rounded">
+                <span key={topic} className="text-[9px] uppercase tracking-[0.1em] text-muted-dark border border-border/50 px-2 py-0.5 rounded font-mono">
                   {topic}
                 </span>
               ))}

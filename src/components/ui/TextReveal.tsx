@@ -22,30 +22,82 @@ export default function TextReveal({
   once = true,
 }: TextRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once, amount: 0.5 });
+  const isInView = useInView(ref, { once, amount: 0.3 });
 
-  const elements = splitBy === 'word' ? text.split(' ') : text.split('');
-  const staggerDelay = splitBy === 'word' ? 0.05 : 0.02;
-
-  return (
-    <Tag ref={ref as React.RefObject<HTMLHeadingElement & HTMLParagraphElement & HTMLSpanElement>} className={className} aria-label={text}>
-      {elements.map((el, i) => (
-        <span key={i} className="inline-block overflow-hidden">
-          <motion.span
-            className="inline-block"
-            initial={{ y: '110%' }}
-            animate={isInView ? { y: '0%' } : { y: '110%' }}
-            transition={{
-              duration: 0.8,
-              ease: EASE_OUT_EXPO,
-              delay: delay + i * staggerDelay,
-            }}
-          >
-            {el}
-            {splitBy === 'word' && i < elements.length - 1 ? '\u00A0' : ''}
-          </motion.span>
+  if (splitBy === 'word') {
+    const words = text.split(' ');
+    return (
+      <Tag ref={ref as any} className={`${className} relative`} aria-label={text}>
+        {/* Accessible screen reader text */}
+        <span className="sr-only">{text}</span>
+        
+        {/* Animated layout hidden from screen readers */}
+        <span aria-hidden="true">
+          {words.map((word, i) => (
+            <span key={i} className="inline-block overflow-hidden">
+              <motion.span
+                className="inline-block"
+                initial={{ y: '110%' }}
+                animate={isInView ? { y: '0%' } : { y: '110%' }}
+                transition={{
+                  duration: 0.8,
+                  ease: EASE_OUT_EXPO,
+                  delay: delay + i * 0.05,
+                }}
+              >
+                {word}
+                {i < words.length - 1 ? '\u00A0' : ''}
+              </motion.span>
+            </span>
+          ))}
         </span>
-      ))}
-    </Tag>
-  );
+      </Tag>
+    );
+  } else {
+    // Character-by-character reveal, grouped inside word blocks to prevent mid-word layout wrapping
+    const words = text.split(' ');
+    let charIndexOffset = 0;
+
+    return (
+      <Tag ref={ref as any} className={`${className} relative`} aria-label={text}>
+        {/* Accessible screen reader text */}
+        <span className="sr-only">{text}</span>
+        
+        {/* Animated layout hidden from screen readers */}
+        <span aria-hidden="true" className="inline-block">
+          {words.map((word, wordIdx) => {
+            const chars = word.split('');
+            const renderedWord = (
+              <span key={wordIdx} className="inline-block whitespace-nowrap">
+                {chars.map((char, charIdx) => {
+                  const globalIdx = charIndexOffset + charIdx;
+                  return (
+                    <span key={charIdx} className="inline-block overflow-hidden">
+                      <motion.span
+                        className="inline-block"
+                        initial={{ y: '110%' }}
+                        animate={isInView ? { y: '0%' } : { y: '110%' }}
+                        transition={{
+                          duration: 0.8,
+                          ease: EASE_OUT_EXPO,
+                          delay: delay + globalIdx * 0.02,
+                        }}
+                      >
+                        {char}
+                      </motion.span>
+                    </span>
+                  );
+                })}
+                {wordIdx < words.length - 1 && (
+                  <span className="inline-block">&nbsp;</span>
+                )}
+              </span>
+            );
+            charIndexOffset += chars.length;
+            return renderedWord;
+          })}
+        </span>
+      </Tag>
+    );
+  }
 }

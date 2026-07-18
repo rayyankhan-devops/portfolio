@@ -1,8 +1,11 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import SmoothScroll from '@/components/layout/SmoothScroll';
+import Preloader from '@/components/ui/Preloader';
 
 // Section components
 import Hero from '@/components/sections/Hero';
@@ -15,20 +18,43 @@ import LearningJourney from '@/components/sections/LearningJourney';
 import Contact from '@/components/sections/Contact';
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Sync initial state if preloader was already played in this session
+    const played = sessionStorage.getItem('preloader-played');
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (played || prefersReducedMotion) {
+      setIsLoading(false);
+    }
+  }, []);
+
   return (
-    <SmoothScroll>
-      <Navbar />
-      <main>
-        <Hero />
-        <About />
-        <Skills />
-        <Projects />
-        <Experience />
-        <Certifications />
-        <LearningJourney />
-        <Contact />
-      </main>
-      <Footer />
-    </SmoothScroll>
+    <>
+      <Preloader onComplete={() => setIsLoading(false)} />
+      
+      <motion.div
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={!isLoading ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.98 }}
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+        style={{ pointerEvents: isLoading ? 'none' : 'auto' }}
+      >
+        <SmoothScroll>
+          <Navbar />
+          <main>
+            <Hero />
+            <About />
+            <Skills />
+            <Projects />
+            <Experience />
+            <Certifications />
+            <LearningJourney />
+            <Contact />
+          </main>
+          <Footer />
+        </SmoothScroll>
+      </motion.div>
+    </>
   );
 }
+

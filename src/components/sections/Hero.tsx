@@ -7,31 +7,9 @@ import { EASE_OUT_EXPO } from '@/lib/animations';
 import FloatingKeywords from '@/components/ui/FloatingKeywords';
 import ScrollIndicator from '@/components/ui/ScrollIndicator';
 import MagneticButton from '@/components/ui/MagneticButton';
+import TextReveal from '@/components/ui/TextReveal';
 
 const heroKeywords = ['Cloud', 'Docker', 'Linux', 'AWS', 'Terraform', 'Kubernetes', 'CI/CD'];
-
-// Staggered character reveal for the main heading
-function AnimatedHeading({ text, delay = 0 }: { text: string; delay?: number }) {
-  return (
-    <span className="inline-block overflow-hidden" aria-label={text}>
-      {text.split('').map((char, i) => (
-        <motion.span
-          key={i}
-          className="inline-block"
-          initial={{ y: '110%' }}
-          animate={{ y: '0%' }}
-          transition={{
-            duration: 0.9,
-            ease: EASE_OUT_EXPO,
-            delay: delay + i * 0.03,
-          }}
-        >
-          {char === ' ' ? '\u00A0' : char}
-        </motion.span>
-      ))}
-    </span>
-  );
-}
 
 export default function Hero() {
   const containerRef = useRef<HTMLElement>(null);
@@ -76,13 +54,21 @@ export default function Hero() {
 
         {/* Main Heading */}
         <div className="mb-6 md:mb-8">
-          <h1 className="font-heading font-bold uppercase leading-[0.9] tracking-tight">
-            <span className="block text-[clamp(3rem,12vw,10rem)]">
-              <AnimatedHeading text="Muhammad" delay={0.2} />
-            </span>
-            <span className="block text-[clamp(3rem,12vw,10rem)] ml-[5vw]">
-              <AnimatedHeading text="Rayyan" delay={0.5} />
-            </span>
+          <h1 className="font-heading font-bold uppercase leading-[0.9] tracking-tighter">
+            <TextReveal
+              text="Muhammad"
+              as="span"
+              splitBy="char"
+              delay={0.2}
+              className="block text-[clamp(3rem,12vw,10rem)]"
+            />
+            <TextReveal
+              text="Rayyan"
+              as="span"
+              splitBy="char"
+              delay={0.5}
+              className="block text-[clamp(3rem,12vw,10rem)] ml-[5vw]"
+            />
           </h1>
         </div>
 
@@ -105,6 +91,33 @@ export default function Hero() {
             >
               Building Scalable Infrastructure • Automating Everything • Cloud Native
             </motion.p>
+
+            {/* Mobile Profile Image (Visible only below lg screen size) */}
+            <div className="relative w-[180px] h-[230px] sm:w-[200px] sm:h-[260px] mt-8 mx-auto lg:hidden block">
+              <motion.div
+                className="relative w-full h-full overflow-hidden rounded-sm z-10"
+                initial={{ clipPath: 'inset(100% 0 0 0)', opacity: 0 }}
+                animate={{ clipPath: 'inset(0% 0 0 0)', opacity: 1 }}
+                transition={{ duration: 1.2, delay: 1.3, ease: EASE_OUT_EXPO }}
+              >
+                <Image
+                  src="/images/profile.jpg"
+                  alt="Muhammad Rayyan - DevOps Engineer"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 200px, 0px"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
+              </motion.div>
+              {/* Decorative accent line */}
+              <motion.div
+                className="absolute -bottom-3 -left-3 w-full h-full border border-accent/20 rounded-sm pointer-events-none z-0"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1, delay: 1.5 }}
+              />
+            </div>
           </div>
 
           {/* CTA */}
@@ -114,7 +127,10 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 1.4, ease: EASE_OUT_EXPO }}
           >
             <MagneticButton href="#projects" strength={0.3}>
-              <span className="group inline-flex items-center gap-3 px-6 py-3 border border-border rounded-full text-sm uppercase tracking-widest hover:border-accent hover:text-accent transition-colors duration-500">
+              <span 
+                data-cursor="explore"
+                className="group inline-flex items-center gap-3 px-6 py-3 border border-border rounded-full text-sm uppercase tracking-widest hover:border-accent hover:text-accent transition-colors duration-500 cursor-pointer"
+              >
                 View My Work
                 <motion.svg
                   className="w-4 h-4"
@@ -132,6 +148,7 @@ export default function Hero() {
           </motion.div>
         </div>
       </motion.div>
+
 
       {/* Profile Image — positioned absolutely on larger screens */}
       <motion.div

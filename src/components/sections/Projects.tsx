@@ -66,7 +66,8 @@ export default function Projects() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-2 text-xs uppercase tracking-[0.15em] rounded-full border transition-all duration-400 ${
+              data-cursor="filter"
+              className={`px-4 py-2 text-xs uppercase tracking-[0.15em] rounded-full border transition-all duration-400 cursor-pointer ${
                 activeCategory === cat
                   ? 'border-accent text-accent bg-accent/5'
                   : 'border-border text-muted hover:border-muted-dark hover:text-foreground'
@@ -104,8 +105,9 @@ export default function Projects() {
                 {/* Project Image */}
                 <motion.div
                   className="relative aspect-[16/10] overflow-hidden rounded-lg bg-surface group cursor-pointer lg:[direction:ltr]"
-                  whileHover={{ scale: 1.02 }}
+                  whileHover={{ scale: 1.025 }}
                   transition={{ duration: 0.5, ease: EASE_OUT_EXPO }}
+                  data-cursor="view"
                 >
                   {project.image ? (
                     <Image
@@ -132,13 +134,13 @@ export default function Projects() {
                 {/* Project Info */}
                 <div className="lg:[direction:ltr]">
                   <div className="mb-4">
-                    <span className="text-xs uppercase tracking-[0.2em] text-accent mb-3 block">
+                    <span className="text-xs uppercase tracking-[0.2em] text-accent mb-3 block font-mono">
                       {project.category}
                     </span>
-                    <h3 className="text-2xl md:text-3xl font-heading font-bold uppercase leading-tight mb-4">
+                    <h3 className="text-2xl md:text-3xl font-heading font-bold uppercase leading-tight mb-4 tracking-tight">
                       {project.title}
                     </h3>
-                    <p className="text-sm md:text-base text-muted leading-relaxed">
+                    <p className="text-sm md:text-base text-muted leading-relaxed text-pretty">
                       {project.description}
                     </p>
                   </div>
@@ -148,7 +150,7 @@ export default function Projects() {
                     {project.tags.map(tag => (
                       <span
                         key={tag}
-                        className="text-[10px] uppercase tracking-[0.15em] text-muted border border-border px-3 py-1.5 rounded-full"
+                        className="text-[10px] uppercase tracking-[0.15em] text-muted border border-border px-3 py-1.5 rounded-full font-mono"
                       >
                         {tag}
                       </span>
@@ -161,11 +163,14 @@ export default function Projects() {
                       const btn = getLinkDetails(project.github, 'github');
                       return (
                         <MagneticButton href={project.github} strength={0.25}>
-                          <span className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs uppercase tracking-[0.15em] transition-colors duration-400 ${
-                            btn.primary 
-                              ? 'bg-accent text-background hover:bg-accent-light' 
-                              : 'border border-border hover:border-accent hover:text-accent'
-                          }`}>
+                          <span 
+                            data-cursor="code"
+                            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs uppercase tracking-[0.15em] transition-all duration-400 cursor-pointer ${
+                              btn.primary 
+                                ? 'bg-accent text-background hover:bg-accent-light' 
+                                : 'border border-border hover:border-accent hover:text-accent hover:bg-accent/5'
+                            }`}
+                          >
                             {btn.icon}
                             {btn.label}
                           </span>
@@ -176,11 +181,14 @@ export default function Projects() {
                       const btn = getLinkDetails(project.link, 'link');
                       return (
                         <MagneticButton href={project.link} strength={0.25}>
-                          <span className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs uppercase tracking-[0.15em] transition-colors duration-400 ${
-                            btn.primary 
-                              ? 'bg-accent text-background hover:bg-accent-light' 
-                              : 'border border-border hover:border-accent hover:text-accent'
-                          }`}>
+                          <span 
+                            data-cursor="live"
+                            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs uppercase tracking-[0.15em] transition-all duration-400 cursor-pointer ${
+                              btn.primary 
+                                ? 'bg-accent text-background hover:bg-accent-light' 
+                                : 'border border-border hover:border-accent hover:text-accent hover:bg-accent/5'
+                            }`}
+                          >
                             {btn.icon}
                             {btn.label}
                           </span>
