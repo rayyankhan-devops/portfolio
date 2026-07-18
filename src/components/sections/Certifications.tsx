@@ -141,14 +141,31 @@ export default function Certifications() {
               className="relative max-w-4xl max-h-[85vh] w-full h-full flex items-center justify-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="relative w-full h-full max-h-[80vh] overflow-hidden rounded-lg border border-border bg-surface">
+              <div 
+                className="relative w-full h-full max-h-[80vh] overflow-hidden rounded-lg border border-border bg-surface select-none"
+                onContextMenu={(e) => e.preventDefault()}
+              >
                 <Image
                   src={selectedCert}
                   alt="Certificate Verification"
                   fill
-                  className="object-contain"
+                  className="object-contain select-none pointer-events-none"
                   sizes="100vw"
                   priority
+                  onDragStart={(e) => e.preventDefault()}
+                />
+                
+                {/* Dynamic Self-Adapting Watermark Overlay */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 select-none overflow-hidden mix-blend-difference opacity-[0.15]">
+                  <p className="text-white text-[clamp(1rem,3.5vw,2.2rem)] font-heading uppercase tracking-[0.25em] font-black rotate-[-25deg] whitespace-nowrap text-center">
+                    MUHAMMADRAYYAN.DEV • FOR VERIFICATION ONLY
+                  </p>
+                </div>
+
+                {/* Transparent Shield Overlay to prevent direct click/drag/tap interaction */}
+                <div 
+                  className="absolute inset-0 z-20 cursor-default select-none pointer-events-auto"
+                  onContextMenu={(e) => e.preventDefault()}
                 />
               </div>
               <button
