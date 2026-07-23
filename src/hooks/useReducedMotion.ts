@@ -3,11 +3,15 @@
 import { useState, useEffect } from 'react';
 
 export function useReducedMotion(): boolean {
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+    return false;
+  });
 
   useEffect(() => {
     const mql = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReducedMotion(mql.matches);
 
     const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
     mql.addEventListener('change', handler);

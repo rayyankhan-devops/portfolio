@@ -27,7 +27,7 @@ export default function TextReveal({
   if (splitBy === 'word') {
     const words = text.split(' ');
     return (
-      <Tag ref={ref as any} className={`${className} relative`} aria-label={text}>
+      <Tag ref={ref as React.RefObject<HTMLParagraphElement>} className={`${className} relative`} aria-label={text}>
         {/* Accessible screen reader text */}
         <span className="sr-only">{text}</span>
         
@@ -56,10 +56,9 @@ export default function TextReveal({
   } else {
     // Character-by-character reveal, grouped inside word blocks to prevent mid-word layout wrapping
     const words = text.split(' ');
-    let charIndexOffset = 0;
 
     return (
-      <Tag ref={ref as any} className={`${className} relative`} aria-label={text}>
+      <Tag ref={ref as React.RefObject<HTMLParagraphElement>} className={`${className} relative`} aria-label={text}>
         {/* Accessible screen reader text */}
         <span className="sr-only">{text}</span>
         
@@ -67,10 +66,13 @@ export default function TextReveal({
         <span aria-hidden="true" className="inline-block">
           {words.map((word, wordIdx) => {
             const chars = word.split('');
-            const renderedWord = (
+            // Pre-calculate starting index for this word to avoid re-assigning variables during mapping
+            const startIdx = words.slice(0, wordIdx).reduce((acc, w) => acc + w.length, 0);
+
+            return (
               <span key={wordIdx} className="inline-block whitespace-nowrap">
                 {chars.map((char, charIdx) => {
-                  const globalIdx = charIndexOffset + charIdx;
+                  const globalIdx = startIdx + charIdx;
                   return (
                     <span key={charIdx} className="inline-block overflow-hidden">
                       <motion.span
@@ -93,8 +95,6 @@ export default function TextReveal({
                 )}
               </span>
             );
-            charIndexOffset += chars.length;
-            return renderedWord;
           })}
         </span>
       </Tag>

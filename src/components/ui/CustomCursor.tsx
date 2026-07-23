@@ -5,7 +5,13 @@ import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motio
 
 export default function CustomCursor() {
   const [isHovered, setIsHovered] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      return !isTouchDevice;
+    }
+    return false;
+  });
   const [isClicking, setIsClicking] = useState(false);
   const [cursorText, setCursorText] = useState('');
 
@@ -22,8 +28,6 @@ export default function CustomCursor() {
     // Disable custom cursor on mobile/touch screens
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     if (isTouchDevice) return;
-
-    setIsVisible(true);
 
     const moveCursor = (e: MouseEvent) => {
       cursorX.set(e.clientX);

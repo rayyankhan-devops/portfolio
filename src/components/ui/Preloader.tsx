@@ -10,16 +10,18 @@ interface PreloaderProps {
 
 export default function Preloader({ onComplete }: PreloaderProps) {
   const [count, setCount] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const isFirstLoad = !sessionStorage.getItem('preloader-played');
+      return !(prefersReducedMotion || !isFirstLoad);
+    }
+    return true;
+  });
 
   useEffect(() => {
-    // Respect reduced motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const isFirstLoad = !sessionStorage.getItem('preloader-played');
-
-    if (prefersReducedMotion || !isFirstLoad) {
+    if (!isVisible) {
       onComplete();
-      setIsVisible(false);
       return;
     }
 
@@ -46,7 +48,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
     }, incrementTime);
 
     return () => clearInterval(timer);
-  }, [onComplete]);
+  }, [onComplete, isVisible]);
 
   if (!isVisible) return null;
 

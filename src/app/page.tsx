@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -18,16 +18,15 @@ import LearningJourney from '@/components/sections/LearningJourney';
 import Contact from '@/components/sections/Contact';
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Sync initial state if preloader was already played in this session
-    const played = sessionStorage.getItem('preloader-played');
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (played || prefersReducedMotion) {
-      setIsLoading(false);
+  const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const played = sessionStorage.getItem('preloader-played');
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      return !(played || prefersReducedMotion);
     }
-  }, []);
+    return true;
+  });
+
 
   return (
     <>

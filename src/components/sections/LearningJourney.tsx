@@ -16,7 +16,6 @@ export default function LearningJourney() {
   });
 
   const progressWidth = useTransform(scrollYProgress, [0.2, 0.7], ['0%', '100%']);
-  const currentDay = useTransform(scrollYProgress, [0.2, 0.7], [0, 90]);
 
   return (
     <section
